@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Rubik" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/c5925bbe37.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta charset="utf-8" />
+    <script type="module" src="./js/graphVis/dependencyGraph.js"></script>
+
+</head>
+
+<body>
+
+    <div id="toolbar">
+        <input type="file" class="FileUpload" id="iodt-upload" type="text" />
+        <button class="btn" id="iodt-upload-button"><i class="fa-solid fa-file-lines"></i></button>
+
+    </div>
+    <div id="contentWrapper">
+        <div id="leftContent"></div>
+
+        <div id="rightContent">
+            <div id="jsoneditor">
+                <JSONEditor bind:content />
+            </div>
+        </div>
+</body>
+
+</html>

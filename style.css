@@ -3,33 +3,208 @@ body {
   margin: 0;
   overflow: hidden;
 
+  height: 100vh;
+
   /* style text */
-  text-align: center;
+  /* text-align: center; */
   font-size: 12px;
   font-family: Sans-Serif;
 
-  /* color text */
-  color: #444;
+  /* color: #444; */
+  background-color: #ffffff;
 }
 
-h1 {
-  /* position the heading */
-  position: absolute;
+textarea {
   width: 100%;
+  height: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  /* position: relative;
+  display: inline-block; */
+  padding: 15px 10px;
+  line-height: 140%;
+}
 
-  /* make sure that the heading is drawn on top */
+h2 {
+  font-size: medium;
+}
+
+/* Style the button that is used to open and close the collapsible content */
+.collapsible {
+  color: #444;
+  background-color: #eee;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+  /* border-bottom: 2px solid black; */
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.active,
+.collapsible:hover {
+  background-color: #ccc;
+}
+
+/* Style the collapsible content. Note: hidden by default */
+.datasection {
+  padding: 18px;
+  display: none;
+  overflow: hidden;
+  background-color: #f1f1f1;
+}
+
+.dataLabel {
+  font-size: 15px;
+  display: inline-flex;
+  width: 10%
+}
+
+
+#jsonEditor {
+  width: 100%;
+}
+
+#contentWrapper {
+  width: 100vw;
+  height: 100vh;
+  /* overflow: sc; */
+}
+
+#rightContent {
+  width: 49vw;
+  /* display: flex;
+  justify-content: right; */
+  /* display: inline-block; */
+  height: 100vh;
+  /* margin: 0; */
+  /* margin-bottom: 15%; */
+  float: right;
+  overflow: scroll;
+
+}
+
+#leftContent {
+  width: 49vw;
+  /* display: inline-block; */
+  height: 100%;
+  float: left;
+  margin: 0;
+  /* float: left; */
+}
+
+/* #canvas-wrap {
+  display: flex;
+  justify-content: left;
+} */
+
+
+#toolbar {
+  width: 100vw;
+  height: 100px;
+  background-color: blue;
+}
+
+#indexColors {
+  opacity: 0;
+}
+
+#finalImage {
+  opacity: 0;
+}
+
+.wrapper {
+  position: absolute;
+  overflow: hidden;
+  right: -200px;
+  opacity: 0;
+  z-index: -1;
+}
+
+.btn {
+  background-color: inherit;
+  border: none;
+  color: white;
+  padding: 12px 12px;
+  font-size: 50px;
+  cursor: pointer;
+}
+
+.btn3D {
+  background-color: inherit;
+  border: none;
+  color: rgb(0, 13, 255);
+  padding: 10px 10px;
+  font-size: 40px;
+  cursor: pointer;
+}
+
+/* Darker background on mouse-over */
+.btn:hover,
+.btn3D:hover {
+  /* background-color: RoyalBlue; */
+  color: #2bff00
+}
+
+.FileUpload {
+  opacity: 0 !important;
+  display: block;
+  width: 0;
+  height: 0;
   z-index: 1;
 }
 
-#scene-container {
-  /* tell our scene container to take up the full page */
-  position: absolute;
-  width: 100%;
-  height: 100%;
+#rendercanvas {
+  position: relative;
+}
 
-  /*
-    Set the container's background color to the same as the scene's
-    background to prevent flashing on load
-  */
-  background-color: skyblue;
+#canvas-wrap {
+  position: relative;
+}
+
+#svgCanvas {
+  position: relative;
+  justify-content: right;
+}
+
+#colorLayerMaps {
+  position: relative;
+  /* justify-content: left; */
+
+}
+
+.mapBlocks {
+  position: flex
+}
+
+#pairBlocks {
+  /* position: relative; */
+  /* display: flex; */
+  /* flex-direction: row; */
+  float: left;
+}
+
+.newEntry {
+  display: block;
+  justify-content: left;
+  margin-bottom: 20px;
+
+}
+
+/* 
+.layerMaps {
+  position: relative;
+  display: inline-block;
+} */
+
+p {
+  font-size: 40px;
+  margin: 0 15px;
+  display: inline;
 }
