@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { plane } from 'three/examples/jsm/Addons.js';
 import { SVGLoader } from 'three/addons/loaders/SVGLoader.js'; // 'three/examples/jsm/loaders/SVGLoader.js'//'
 import { MeshLine, MeshLineMaterial, MeshLineRaycast } from 'three.meshline';
 
