@@ -2,7 +2,13 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { SVGLoader } from 'three/addons/loaders/SVGLoader.js'; // 'three/examples/jsm/loaders/SVGLoader.js'//'
-import { MeshLine, MeshLineMaterial, MeshLineRaycast } from 'three.meshline';
+// import { MeshLine, MeshLineMaterial, MeshLineRaycast } from 'three.meshline';
+import {
+    MeshLineGeometry,
+    MeshLineMaterial,
+    raycast
+} from 'meshline';
+
 
 import { svgMC } from './main.js';
 import { calcHeight, warpEnds } from './imgExports.js';
@@ -262,7 +268,17 @@ function renderSVGAsLines3D(pathIn, colorIn, layerIn = 0, Offset = 0) {
         if (linesDataOut[keys[i]].type == "line") {
             // // console.log(linesDataOut[i])
             // points = addLine(linesDataOut[keys[i]].start[0] + xOffset, linesDataOut[keys[i]].start[1], linesDataOut[keys[i]].end[0] + xOffset, linesDataOut[keys[i]].end[1], z, materialML)
+            const lineData = linesDataOut[keys[i]];
 
+            console.log("LINE DATA:", lineData);
+
+            console.log({
+                x1: lineData.start?.[0],
+                y1: lineData.start?.[1],
+                x2: lineData.end?.[0],
+                y2: lineData.end?.[1],
+                z: z + Offset
+            });
             points = addLine(linesDataOut[keys[i]].start[0], linesDataOut[keys[i]].start[1], linesDataOut[keys[i]].end[0], linesDataOut[keys[i]].end[1], z + (Offset), materialML)
         }
         if (linesDataOut[keys[i]].type == "cubic") {
@@ -323,6 +339,17 @@ function addLine(x1, y1, x2, y2, z = 0, materialIN) {
     allVect3.push(v2)
 
 
+    const lineGeometry = new MeshLineGeometry();
+
+    lineGeometry.setPoints([
+        [v1.x, v1.y, v1.z],
+        [v2.x, v2.y, v2.z]
+    ]);
+
+
+
+
+
     // lineData.push([points, materialIN.color, uniqueID])
     // const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
 
@@ -338,11 +365,20 @@ function addLine(x1, y1, x2, y2, z = 0, materialIN) {
     // line.setPoints(points);
 
     // return points
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    const line = new MeshLine();
-    line.setGeometry(geometry);
-    const mesh = new THREE.Mesh(line, materialIN);
+    // const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    // const line = new MeshLine();
+    // line.setGeometry(geometry);
+    // const mesh = new THREE.Mesh(line, materialIN);
+    // scene.add(mesh);
+
+    // const lineGeometry = new MeshLineGeometry();
+    // lineGeometry.setPoints(points);
+
+    const mesh = new THREE.Mesh(lineGeometry, materialIN);
+    mesh.raycast = raycast;
+
     scene.add(mesh);
+
     // console.log("NEW LINE: ", v1, v2)
 
     let smV = v2.x < v1.x ? v2 : v1
@@ -358,6 +394,8 @@ function addLine(x1, y1, x2, y2, z = 0, materialIN) {
     let incrementX = (bV.x - smV.x) / (pointsSampleSize)
     let incrementY = Math.abs(bV.y - smV.y) / (pointsSampleSize)
     // console.log(incrementX, incrementY)
+
+
     for (let i = 0; i < (pointsSampleSize); i++) {
         let x = vert ? bV.x : i * incrementX
         let y = vert ? i * incrementY : ((((bV.y - smV.y) / (bV.x - smV.x)) * (x - smV.x)) + smV.y)
@@ -403,10 +441,30 @@ function addBezier(x1, y1, x2, y2, x3, y3, x4, y4, z = 0, materialIN) {
     // const mesh = new THREE.Mesh(geometry, material);
     // scene.add(curveObject)
 
-    const line = new MeshLine();
-    line.setGeometry(geometry);
-    const mesh = new THREE.Mesh(line, materialIN);
+    // const line = new MeshLine();
+    // line.setGeometry(geometry);
+    // const mesh = new THREE.Mesh(line, materialIN);
+    // scene.add(mesh);
+
+    const lineGeometry = new MeshLineGeometry();
+
+    lineGeometry.setPoints(
+        points.map(p => [p.x, p.y, p.z])
+    );
+
+    const mesh = new THREE.Mesh(lineGeometry, materialIN);
+    mesh.raycast = raycast;
+
     scene.add(mesh);
+
+    // const lineGeometry = new MeshLineGeometry();
+    // lineGeometry.setPoints(points);
+
+    // const mesh = new THREE.Mesh(lineGeometry, materialIN);
+    // mesh.raycast = raycast;
+
+    // scene.add(mesh);
+
     return points
 }
 

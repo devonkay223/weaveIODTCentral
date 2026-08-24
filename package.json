@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/devonkay223/weaveIODTCentral/issues"
   },
-  "homepage": "https://github.com/devonkay223/weaveIODTCentral#readme"
+  "homepage": "https://github.com/devonkay223/weaveIODTCentral#readme",
+  "dependencies": {
+    "meshline": "^3.3.1"
+  }
 }
