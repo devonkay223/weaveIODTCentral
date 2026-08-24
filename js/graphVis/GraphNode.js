@@ -1,4 +1,4 @@
-import { dGraphMC } from "../main"
+import { dGraphMC } from "../main.js"
 
 
 export class GraphNode {

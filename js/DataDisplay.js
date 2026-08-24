@@ -1,4 +1,4 @@
-import DataEntry from "./DataEntry";
+import DataEntry from "./DataEntry.js";
 
 export default class DataDisplay {
     constructor(type, typestandardIn, jsonIn = '') {

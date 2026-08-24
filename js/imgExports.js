@@ -1,8 +1,8 @@
 import { Vector2, Vector3 } from "three";
-import { cutPlane, lineData, numPieces, offset } from "./3d";
-import { getData } from "./graphVis/jsonEditor";
-import { colorPalette, imgRatio, vbH, vbW } from "./iodtProcessing";
-import { instantiateCanvases, svgMC } from "./main";
+import { cutPlane, lineData, numPieces, offset } from "./3.js";
+import { getData } from "./graphVis/jsonEditor.js";
+import { colorPalette, imgRatio, vbH, vbW } from "./iodtProcessing.js";
+import { instantiateCanvases, svgMC } from "./main.js";
 
 export { reduceColors, convertSVGtoImg, warpEnds, calcHeight, downloadImage, setWarpEnds, createLayerSlice, createMoB }
 

@@ -245,9 +245,7 @@ async function reduceColorsProxy() {
     reduceColors(document.getElementById("jpegOut"))
 }
 
-function downloadZip(){
-    
-}
+function downloadZip() { }
 
 
 

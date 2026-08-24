@@ -1,5 +1,5 @@
 import { createJSONEditor, createAjvValidator, renderValue, EnumValue } from 'vanilla-jsoneditor'
-import { extractData, workingJSON } from '../iodtProcessing';
+import { extractData, workingJSON } from '../iodtProcessing.js';
 import { immutableJSONPatch, insertAt, revertJSONPatch, setIn, updateIn } from 'immutable-json-patch'
 
 

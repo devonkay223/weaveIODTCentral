@@ -5,9 +5,9 @@ import { plane } from 'three/examples/jsm/Addons.js';
 import { SVGLoader } from 'three/addons/loaders/SVGLoader.js'; // 'three/examples/jsm/loaders/SVGLoader.js'//'
 import { MeshLine, MeshLineMaterial, MeshLineRaycast } from 'three.meshline';
 
-import { svgMC } from './main';
-import { calcHeight, warpEnds } from './imgExports';
-import { vbH, vbW } from './iodtProcessing';
+import { svgMC } from './main.js';
+import { calcHeight, warpEnds } from './imgExports.js';
+import { vbH, vbW } from './iodtProcessing.js';
 
 // const MeshLine = require('three.meshline').MeshLine;
 // const MeshLineMaterial = require('three.meshline').MeshLineMaterial;

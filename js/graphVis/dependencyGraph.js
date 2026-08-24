@@ -1,5 +1,5 @@
-import { GraphNode } from "./GraphNode"
-import { getJSON } from "./jsonEditor"
+import { GraphNode } from "./GraphNode.js"
+import { getJSON } from "./jsonEditor.js"
 
 export { renderData }
 
