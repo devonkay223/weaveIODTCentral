@@ -1,5 +1,5 @@
 import { Vector2, Vector3 } from "three";
-import { cutPlane, lineData, numPieces, offset } from "./3.js";
+import { cutPlane, lineData, numPieces, offset } from "./3d.js";
 import { getData } from "./graphVis/jsonEditor.js";
 import { colorPalette, imgRatio, vbH, vbW } from "./iodtProcessing.js";
 import { instantiateCanvases, svgMC } from "./main.js";
