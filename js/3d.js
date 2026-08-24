@@ -270,15 +270,15 @@ function renderSVGAsLines3D(pathIn, colorIn, layerIn = 0, Offset = 0) {
             // points = addLine(linesDataOut[keys[i]].start[0] + xOffset, linesDataOut[keys[i]].start[1], linesDataOut[keys[i]].end[0] + xOffset, linesDataOut[keys[i]].end[1], z, materialML)
             const lineData = linesDataOut[keys[i]];
 
-            console.log("LINE DATA:", lineData);
+            // console.log("LINE DATA:", lineData);
 
-            console.log({
-                x1: lineData.start?.[0],
-                y1: lineData.start?.[1],
-                x2: lineData.end?.[0],
-                y2: lineData.end?.[1],
-                z: z + Offset
-            });
+            // console.log({
+            //     x1: lineData.start?.[0],
+            //     y1: lineData.start?.[1],
+            //     x2: lineData.end?.[0],
+            //     y2: lineData.end?.[1],
+            //     z: z + Offset
+            // });
             points = addLine(linesDataOut[keys[i]].start[0], linesDataOut[keys[i]].start[1], linesDataOut[keys[i]].end[0], linesDataOut[keys[i]].end[1], z + (Offset), materialML)
         }
         if (linesDataOut[keys[i]].type == "cubic") {

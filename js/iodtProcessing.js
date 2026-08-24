@@ -4,7 +4,7 @@ import DataDisplay from "./DataDisplay.js";
 import { cleanScene, renderSVGAsLines3D } from "./3d.js";
 import { setWarpEnds } from "./imgExports.js";
 import { getJSON, updatedContent } from "./graphVis/jsonEditor.js";
-import { color } from "three/tsl";
+// import { color } from "three/tsl";
 
 export { colorPalette, extractData, imgRatio, workingJSON, vbW, vbH, parseInputToStandard }
 
