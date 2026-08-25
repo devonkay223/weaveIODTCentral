@@ -1,0 +1,81 @@
+{
+    "Loom": {
+        "TotalWarpEnds": "",
+        "TotalEndHooks": "",
+        "WeftSelectors": "",
+        "EndsPerCm": "",
+        "NumberOfRepeats": "",
+        "TypeOfRepeat": "",
+        "Mappings": {
+            "Fiber": [
+                {
+                    "Fiber": ""
+                }
+            ]
+        }
+    },
+    "FormPieces": {
+        "Name": {
+            "Index": "",
+            "LayerSystem": "",
+            "Geometry": {
+                "ID": "",
+                "PointList": [
+                    {
+                        "ID": "",
+                        "PointType": "",
+                        "Position": {
+                            "x": "",
+                            "y": ""
+                        },
+                        "SeamLinePairs": ""
+                    }
+                ]
+            },
+            "Mappings": {
+                "WeaveStructure": "",
+                "Fiber": ""
+            }
+        }
+    },
+    "WeaveStructure": {
+        "Name": {
+            "DataArray": "",
+            "ColorArray": "",
+            "Mappings": {
+                "Fiber": ""
+            }
+        }
+    },
+    "ArtworkAreas": {
+        "Name": {
+            "Index": "",
+            "ID": "",
+            "SVG": "",
+            "Color": "",
+            "LayerSystem": "",
+            "Mappings": {
+                "FormPieces": "",
+                "WeaveStructureCompiled": ""
+            }
+        }
+    },
+    "WeaveStructureCompiled": {
+        "Name": {
+            "DataArray": "",
+            "ColorArray": "",
+            "WarpSequence": "",
+            "Mapping": {
+                "ArtworkAreas": "",
+                "WeaveStructure": ""
+            }
+        }
+    },
+    "Fiber": {
+        "Name": {
+            "Type": "",
+            "Size": "",
+            "Blend": ""
+        }
+    }
+}
