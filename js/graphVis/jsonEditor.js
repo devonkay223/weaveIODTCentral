@@ -53,7 +53,7 @@ async function instantiateEditor() {
 }
 
 async function loadData() {
-    const response = await fetch('./js/dataDef.json');
+    const response = await fetch('/js/dataDef.json');
 
     if (!response.ok) {
         throw new Error(`Failed to load JSON: ${response.status}`);
