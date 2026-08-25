@@ -129,7 +129,9 @@ function parseInputToStandard(iodtIn) {
     xobj.overrideMimeType("application/json");
     xobj.open('GET', '/js/dataDef.json', false);
     xobj.send(null);
+    console.log(xobj.responseText)
     var dataDef = JSON.parse(xobj.responseText);
+    console.log(dataDef)
     var keysDataDef = Object.keys(dataDef);
 
 
