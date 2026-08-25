@@ -5,7 +5,7 @@ import { immutableJSONPatch, insertAt, revertJSONPatch, setIn, updateIn } from '
 
 // TODO define schema and add validation
 // const validator = createAjvValidator({ schema, schemaDefinitions })
-export { instantiateEditor, updatedContent, downloadIODT, getJSON, getData }
+export { instantiateEditor, updatedContent, downloadIODT, getJSON, getData, dataDef }
 
 let content;
 let editor;

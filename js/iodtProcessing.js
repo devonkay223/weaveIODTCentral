@@ -3,7 +3,7 @@ import PatternPiece from "./PatternPiece.js";
 import DataDisplay from "./DataDisplay.js";
 import { cleanScene, renderSVGAsLines3D } from "./3d.js";
 import { setWarpEnds } from "./imgExports.js";
-import { getJSON, updatedContent } from "./graphVis/jsonEditor.js";
+import { dataDef, getJSON, updatedContent } from "./graphVis/jsonEditor.js";
 // import { color } from "three/tsl";
 
 export { colorPalette, extractData, imgRatio, workingJSON, vbW, vbH, parseInputToStandard }
@@ -125,14 +125,16 @@ function extractData(SVGdef = '') {
 
 // 
 function parseInputToStandard(iodtIn) {
-    var xobj = new XMLHttpRequest();
-    xobj.overrideMimeType("application/json");
-    xobj.open('GET', '/js/dataDef.json', false);
-    xobj.send(null);
-    console.log(xobj.responseText)
-    var dataDef = JSON.parse(xobj.responseText);
-    console.log(dataDef)
+    // var xobj = new XMLHttpRequest();
+    // xobj.overrideMimeType("application/json");
+    // xobj.open('GET', '/js/dataDef.json', false);
+    // xobj.send(null);
+    // console.log(xobj.responseText)
+    // var dataDef = JSON.parse(xobj.responseText);
+    // console.log(dataDef)
     var keysDataDef = Object.keys(dataDef);
+
+
 
 
     for (let i = 0; i < keysDataDef.length; i++) {
