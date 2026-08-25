@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/devonkay223/weaveIODTCentral#readme",
   "dependencies": {
-    "meshline": "^3.3.1"
+    "meshline": "^3.3.1",
+    "three": "^0.185.1",
+    "url-parse": "^1.5.10"
   }
 }
