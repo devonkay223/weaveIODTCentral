@@ -63,9 +63,6 @@ function instatiate3D() {
     // camera.lookAt(new THREE.Vector3(warpEnds, warpEnds, warpEnds));
     controls.target = new THREE.Vector3(warpEnds / 2, warpEnds / 2, 0);
 
-    console.log(THREE.REVISION);
-
-
 
     function animate(time) {
         renderer.render(scene, camera);

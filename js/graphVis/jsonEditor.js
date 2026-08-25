@@ -16,7 +16,7 @@ function instantiateEditor() {
     xobj.overrideMimeType("application/json");
     xobj.open('GET', './js/dataDef.json', false);
     xobj.send(null);
-    // // console.log(xobj.responseText)
+    console.log(xobj.responseText)
     dataDef = JSON.parse(xobj.responseText);
 
     // var dataDef = workingJSON
