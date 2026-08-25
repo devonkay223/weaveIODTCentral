@@ -11,13 +11,16 @@ let content;
 let editor;
 let dataDef;
 
-function instantiateEditor() {
-    var xobj = new XMLHttpRequest();
-    xobj.overrideMimeType("application/json");
-    xobj.open('GET', './js/dataDef.json', false);
-    xobj.send(null);
-    console.log(xobj.responseText)
-    dataDef = JSON.parse(xobj.responseText);
+async function instantiateEditor() {
+    // var xobj = new XMLHttpRequest();
+    // xobj.overrideMimeType("application/json");
+    // xobj.open('GET', './js/dataDef.json', false);
+    // xobj.send(null);
+    // console.log(xobj.responseText)
+    // dataDef = JSON.parse(xobj.responseText);
+
+    dataDef = await loadData()
+    console.log(dataDef)
 
     // var dataDef = workingJSON
     // console.log(dataDef)
@@ -47,6 +50,18 @@ function instantiateEditor() {
     });
 
     addStandardMenuItems()
+}
+
+async function loadData() {
+    const response = await fetch('./js/dataDef.json');
+
+    if (!response.ok) {
+        throw new Error(`Failed to load JSON: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data;
 }
 
 function onRenderValue(props) {
