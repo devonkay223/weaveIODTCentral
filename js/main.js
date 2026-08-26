@@ -4,7 +4,7 @@ import { renderData } from "./graphVis/dependencyGraph.js";
 import { downloadIODT, instantiateEditor } from "./graphVis/jsonEditor.js";
 import { extractData, parseInputToStandard } from "./iodtProcessing.js";
 import MainCanvas from "./MainCanvas.js";
-import { convertSVGtoImg, reduceColors, downloadImage, setWarpEnds, createLayerSlice, createMoB } from "./imgExports.js";
+import { convertSVGtoImg, reduceColors, downloadImage, setWarpEnds, createLayerSlice, createMoC } from "./imgExports.js";
 // import { reduceColors } from "./svgtojpg.js";
 export { svgMC, dGraphMC, colorMapMC, writeSVGPath, patternPieces, instantiateCanvases }
 // vars here
@@ -47,6 +47,8 @@ document.getElementById("iodt-upload-button").addEventListener("click", iodtUplo
 // document.getElementById("svg-upload-button").addEventListener("click", svgUploadClick)
 // document.getElementById("svg-to-jpg-button").addEventListener("click", convertSVGtoImg)
 document.getElementById("jpg-reduce-colors-button").addEventListener("click", reduceColorsProxy)
+document.getElementById("moc-button").addEventListener("click", createMoC)
+
 document.getElementById("iodt-download-button").addEventListener("click", downloadIODT)
 
 document.getElementById("cut-plane-button").addEventListener("click", addCutPlane)
@@ -72,9 +74,9 @@ function doc_keyUp(e) {
     //     movePlaneDown()
     // }
 
-    // if (e.key == 'p') {
-    //     createMoB();
-    // }
+    if (e.key == 'p') {
+        createMoC();
+    }
 
 }
 

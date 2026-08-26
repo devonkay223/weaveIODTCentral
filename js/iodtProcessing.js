@@ -60,16 +60,45 @@ function extractData(SVGdef = '') {
         let svgBody = svgText.substring(pos1, pos2 + 6)
         var svgConvert = parser.parseFromString(svgBody, "text/html")
         var svgHTML = svgConvert.querySelector("svg");
-        var svgHTMLMod = svgConvert.querySelector("svg");
+        // var svgHTMLMod = svgConvert.querySelector("svg");
 
 
         svgContainer.append(svgHTML)
+        //      svgMC.ctx.translate(0, scaledH);
+        // // Scale vertically (mirror Y-axis)  
+        // svgMC.ctx.scale(1, -1);
+        // svgMC.ctx.scale(scaledW / width, scaledH / height)
+        // const transform = svgContainer.querySelector("svg").createSVGTransform();
+        // transform.setScale(-1, 1)
+
+
+
         let size = svgContainer.querySelector("svg").getAttribute("viewBox")
         let vals = size.split(" ")
         vbW = parseInt(vals[2])
         vbH = parseInt(vals[3])
 
         imgRatio = vbW / vbH
+
+        //apply transformaiton so its persistent in mob download
+        const svg = document.getElementById("svg-container").querySelector('svg');
+
+        const group = document.createElementNS(
+            'http://www.w3.org/2000/svg',
+            'g'
+        );
+
+        svg.querySelectorAll('path').forEach(path => {
+            console.log(path)
+            group.appendChild(path);
+        });
+
+        svg.appendChild(group);
+        group.setAttribute(
+            "transform",
+            // `translate(300, 300) scale(-.25 1)`
+            `translate(0 ${vbH}) scale(1 -1)`
+        );
     }
 
 

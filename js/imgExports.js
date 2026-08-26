@@ -4,7 +4,7 @@ import { getData } from "./graphVis/jsonEditor.js";
 import { colorPalette, imgRatio, vbH, vbW } from "./iodtProcessing.js";
 import { instantiateCanvases, svgMC } from "./main.js";
 
-export { reduceColors, convertSVGtoImg, warpEnds, calcHeight, downloadImage, setWarpEnds, createLayerSlice, createMoB }
+export { reduceColors, convertSVGtoImg, warpEnds, calcHeight, downloadImage, setWarpEnds, createLayerSlice, createMoC }
 
 const content = document.querySelector(".content");
 // const fileInput = document.querySelector("input[type=file]");
@@ -92,14 +92,15 @@ const getImageURL = async (svgURL, { format, quality }) => {
 }
 
 
-// Reduce Colors: called form proxy in main
-function reduceColors(imgIn) {
+// Reduce Colors: called form proxy in main after convert svg to image
+async function reduceColors(imgIn) {
     const canvas = document.getElementById("indexColors");
-    canvas.width = warpEnds
+    let repeats = getData("Loom", "NumberOfRepeats") ? getData("Loom", "NumberOfRepeats") : 1;
+    canvas.width = warpEnds * repeats
     canvas.height = calcHeight
     const ctx = canvas.getContext("2d")
     // console.log("reducing colors", canvas.width, canvas.height)
-    ctx.drawImage(imgIn, 0, 0, imgIn.width, imgIn.height, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(imgIn, 0, 0, imgIn.width, imgIn.height, 0, 0, warpEnds, canvas.height);
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
     let prevColor = []
@@ -133,7 +134,22 @@ function reduceColors(imgIn) {
             }
         }
     }
-    ctx.putImageData(imageData, 0, 0);
+    let rType = getData("Loom", "TypeOfRepeat")
+    let mirroredData
+
+    if (rType == "mirrored") {
+        mirroredData = await getMirrored(imageData)
+
+    }
+    console.log(imageData, mirroredData)
+    for (let i = 0; i < repeats; i++) {
+        ctx.putImageData(imageData, i * warpEnds, 0);
+        // if (rType == "mirrored" && i % 2 == 1) {
+        //     ctx.putImageData(mirroredData, i * warpEnds, 0, 0, 0, warpEnds, calcHeight);
+        // } else {
+        //     ctx.putImageData(imageData, i * warpEnds, 0, 0, 0, warpEnds, calcHeight);
+        // }
+    }
     // downloadReduced()
 
     canvas.toBlob((blob) => {
@@ -158,6 +174,23 @@ function reduceColors(imgIn) {
         img.onload = () => URL.revokeObjectURL(imageUrl);
     }, 'image/webp'); // Specify image format (e.g., 'image/jpeg')
 
+}
+
+async function getMirrored(imageData) {
+    let width = imageData.width
+    let mirroredData = new ImageData(width, imageData.height);
+    for (let y = 0; y < imageData.height; y++) {
+        for (let x = 0; x < width; x++) {
+            const sourceIndex = (y * width + x) * 4;
+            const targetIndex = (y * width + (width - 1 - x)) * 4;
+
+            mirroredData.data[targetIndex] = imageData.data[sourceIndex];
+            mirroredData.data[targetIndex + 1] = imageData.data[sourceIndex + 1];
+            mirroredData.data[targetIndex + 2] = imageData.data[sourceIndex + 2];
+            mirroredData.data[targetIndex + 3] = imageData.data[sourceIndex + 3];
+        }
+    }
+    return mirroredData
 }
 
 // function downloadReduced() {
@@ -330,7 +363,7 @@ function createLayerSlice() {
 
 }
 
-function createMoB() {
+function createMoC() {
     const canvas = document.getElementById("mobOut");
     canvas.width = 1275
     canvas.height = 1550
