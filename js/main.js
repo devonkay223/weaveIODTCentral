@@ -5,8 +5,10 @@ import { downloadIODT, instantiateEditor } from "./graphVis/jsonEditor.js";
 import { extractData, parseInputToStandard } from "./iodtProcessing.js";
 import MainCanvas from "./MainCanvas.js";
 import { convertSVGtoImg, reduceColors, downloadImage, setWarpEnds, createLayerSlice, createMoC } from "./imgExports.js";
+import JSZip from 'jszip';
+
 // import { reduceColors } from "./svgtojpg.js";
-export { svgMC, dGraphMC, colorMapMC, writeSVGPath, patternPieces, instantiateCanvases }
+export { svgMC, dGraphMC, colorMapMC, writeSVGPath, patternPieces, instantiateCanvases, zip }
 // vars here
 let toolbarH = 100; // UPDATE IN CSS if you change
 let svgPaths = []
@@ -18,6 +20,10 @@ let patternPieces = []
 let svgMC;
 let colorMapMC;
 let dGraphMC;
+
+const zip = new JSZip();
+
+
 // instatiate canvases here 
 // let svgMC = new MainCanvas("svg", 0, (window.innerWidth / 2) + 50, toolbarH + 50, 1500, 1000)
 // let colorMapMC = new MainCanvas("colorMap", 0, (window.innerWidth / 2) + 50, toolbarH + 50 + 960, window.innerWidth / 2, 100)
@@ -48,15 +54,14 @@ document.getElementById("iodt-upload-button").addEventListener("click", iodtUplo
 // document.getElementById("svg-to-jpg-button").addEventListener("click", convertSVGtoImg)
 document.getElementById("jpg-reduce-colors-button").addEventListener("click", reduceColorsProxy)
 document.getElementById("moc-button").addEventListener("click", createMoC)
-
 document.getElementById("iodt-download-button").addEventListener("click", downloadIODT)
+document.getElementById("zip-files-button").addEventListener("click", downloadZip)
 
 document.getElementById("cut-plane-button").addEventListener("click", addCutPlane)
 document.getElementById("move-up-button").addEventListener("click", movePlaneUp)
 document.getElementById("move-down-button").addEventListener("click", movePlaneDown)
-document.getElementById("capture-slice-button").addEventListener("click", createLayerSlice)
-
-
+document.getElementById("capture-slice-button").addEventListener("click", createLayerSliceProxy)
+document.getElementById("download-slice-button").addEventListener("click", downloadLayerSliceProxy)
 
 
 function doc_keyUp(e) {
@@ -166,12 +171,12 @@ function previewSVG() {
 
 function instantiateCanvases(width, height) {
 
-    // let scaledH = ((window.innerHeight / 2) * .8)
-    // let scaledW = (scaledH / height) * width
+    let scaledH = ((window.innerHeight / 2) * .6)
+    let scaledW = (scaledH / height) * width
+    svgMC = new MainCanvas("svg", 0, 15, 15, scaledW, scaledH)//((window.innerWidth / 2) - scaledW) / 2, 0, scaledW, scaledH)
+    // let scaledW = ((window.innerWidth / 2) * .75)
+    // let scaledH = (scaledW / width) * height
     // svgMC = new MainCanvas("svg", 0, ((window.innerWidth / 2) - scaledW) / 2, 0, scaledW, scaledH)
-    let scaledW = ((window.innerWidth / 2) * .75)
-    let scaledH = (scaledW / width) * height
-    svgMC = new MainCanvas("svg", 0, ((window.innerWidth / 2) - scaledW) / 2, 0, scaledW, scaledH)
     svgMC.ctx.translate(0, scaledH);
     // Scale vertically (mirror Y-axis)  
     svgMC.ctx.scale(1, -1);
@@ -216,7 +221,7 @@ function loadIODT() {
     var reader = new FileReader();
     reader.onload = onReaderLoad;
     reader.readAsText(event.target.files[0]);
-    document.getElementById("file-name-input").value = event.target.files[0].name.split(".json")[0]
+    document.getElementById("file-name-input").value = event.target.files[0].name.split("_iodt.json")[0]
     // console.log(event.target.files[0].name)
 }
 
@@ -242,12 +247,63 @@ function svgUploadClick() {
     document.getElementById('svg-upload').click();
 }
 
-async function reduceColorsProxy() {
+async function reduceColorsProxy(download = 1) {
     await convertSVGtoImg()
-    reduceColors(document.getElementById("jpegOut"))
+    await reduceColors(document.getElementById("jpegOut"), download)
 }
 
-function downloadZip() { }
+
+async function downloadZip() {
+    let exportName = document.getElementById("file-name-input").value;
+    let files = {}
+    files[exportName + "_iodt.json"] = downloadIODT(0)
+    zip.file(exportName + "_iodt.json", downloadIODT(0));
+
+    await createMoC(0);
+    const blobMoC = await new Promise((resolve, reject) => {
+        document.getElementById("mocout").toBlob(
+            (blob) => (blob ? resolve(blob) : reject(new Error("Failed to create MoC blob"))),
+            "image/png"
+        );
+    });
+    // Add PNG to ZIP
+    zip.file(exportName + "_MOC.png", blobMoC);
+
+
+    await reduceColorsProxy(0);
+    const blobMoB = await new Promise((resolve, reject) => {
+        document.getElementById("indexColors").toBlob(
+            (blob) => (blob ? resolve(blob) : reject(new Error("Failed to create MoB blob"))),
+            "image/png"
+        );
+    });
+    zip.file(exportName + "_MOB.png", blobMoB);
+
+    const blob = await zip.generateAsync({
+        type: "blob",
+        compression: "STORE"
+        // compressionOptions: {
+        //   level: 6,
+        // },
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = exportName + ".zip";
+    link.click();
+
+    URL.revokeObjectURL(url);
+}
+
+function downloadLayerSliceProxy() {
+    createLayerSlice(1)
+}
+
+function createLayerSliceProxy() {
+    createLayerSlice(0)
+}
 
 
 

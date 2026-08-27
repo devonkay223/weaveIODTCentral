@@ -86,7 +86,7 @@ h2 {
   /* margin: 0; */
   /* margin-bottom: 15%; */
   float: right;
-  overflow: scroll;
+  overflow: hidden;
 
 }
 
@@ -169,14 +169,15 @@ h2 {
 }
 
 #svgCanvas {
-  position: relative;
-  justify-content: right;
+  /* position: relative; */
+  /* justify-content: right; */
+  float: left;
 }
 
 #colorLayerMaps {
-  position: relative;
+  /* position: relative; */
   /* justify-content: left; */
-
+  float: right;
 }
 
 .mapBlocks {

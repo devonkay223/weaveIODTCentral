@@ -1,4 +1,4 @@
-## THIS FILE WILL BE REFACTORED WHEN SEAMLINE DATA IS ACCESSIBLE 
+## THIS FILE WILL BE REFACTORED WHEN SEAMLINE DATA IS ACCESSIBLE - including improved scoping, code order, and comments
 
 import fabric_api
 import pattern_api

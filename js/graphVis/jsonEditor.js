@@ -219,7 +219,7 @@ const schema = {
     // required: ['TotalWarpEnds']
 }
 
-function downloadIODT() {
+function downloadIODT(download = 1) {
     const jsonOut = editor.get()
     // alert(JSON.stringify(jsonOut, null, 2).replace(/\\n/g, ''))
 
@@ -227,13 +227,18 @@ function downloadIODT() {
     let exportName = document.getElementById("file-name-input").value
 
     var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonOut["json"], null, 4));
-    var downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", exportName + ".json");
-    document.body.appendChild(downloadAnchorNode); // required for firefox
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
+    if (download) {
+        var downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", exportName + "_iodt.json");
+        document.body.appendChild(downloadAnchorNode); // required for firefox
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    }
+
+    return JSON.stringify(jsonOut["json"], null, 4)
 }
+
 
 function getJSON() {
     return editor.get()["json"]

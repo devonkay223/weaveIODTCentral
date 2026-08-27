@@ -10,8 +10,8 @@
 
 
 
-  <script type="module" crossorigin src="/weaveIODTCentral/assets/index-DrDI6IWA.js"></script>
-  <link rel="stylesheet" crossorigin href="/weaveIODTCentral/assets/index-oIQvhqVk.css">
+  <script type="module" crossorigin src="/weaveIODTCentral/assets/index-DRDq6q0J.js"></script>
+  <link rel="stylesheet" crossorigin href="/weaveIODTCentral/assets/index-Cbl6CCYF.css">
 </head>
 
 <body>
@@ -20,13 +20,16 @@
     <input type="file" class="FileUpload" id="svg-upload" type="image" />
     <input type="file" class="FileUpload" id="iodt-upload" type="text" />
 
-    <button class="btn" id="iodt-upload-button" title="Upload JSON"><i class="fa-solid fa-file-lines"></i></button>
+    <button class="btn" id="iodt-upload-button" title="Upload JSON"><i class="fa-solid fa-upload"></i></button>
     <!-- <button class="btn" id="svg-upload-button"><i class="fa-solid fa-upload"></i></button> -->
     <!-- <button class="btn" id="svg-to-jpg-button"><i class="fa-regular fa-image"></i></button> -->
-    <button class="btn" id="jpg-reduce-colors-button" title="Download MoB"><i class="fa-regular fa-image"></i></button>
-    <button class="btn" id="iodt-download-button" title="Download JSON"><i class="fa-solid fa-download"></i></button>
     <input type="text" id="file-name-input" value="fileName" title="Project Files Name">
-    <button class="btn" id="" title="Download all files"><i class="fa-regular fa-file-zipper"></i></button>
+
+    <button class="btn" id="jpg-reduce-colors-button" title="Download MoB"><i class="fa-regular fa-image"></i></button>
+    <button class="btn" id="moc-button" title="Download MoC"><i class="fa-regular fa-object-group"></i></button>
+    <button class="btn" id="iodt-download-button" title="Download JSON"><i class="fa-solid fa-file-lines"></i></button>
+    <button class="btn" id="zip-files-button" title="Download all files"><i
+        class="fa-regular fa-file-zipper"></i></button>
 
     <!-- <label for="warpEndsIn">Warp Ends:</label>
     <input type="text" id="warpEndsIn" name="warpEndsIn"><br><br> -->
@@ -41,8 +44,10 @@
         <button class="btn3D" id="move-up-button" title="Move plane up"><i class="fa-solid fa-arrow-up"></i></button>
         <button class="btn3D" id="move-down-button" title="Move plane down"><i
             class="fa-solid fa-arrow-down"></i></button>
-        <button class="btn3D" id="capture-slice-button" title="Capture slice"><i
+        <button class="btn3D" id="capture-slice-button" title="Capture slice for .zip"><i
             class="fa-regular fa-camera"></i></button>
+        <button class="btn3D" id="download-slice-button" title="Download slice image"><i
+            class="fa-solid fa-download"></i></button>
 
       </div>
 
@@ -83,7 +88,7 @@
     <!-- <div id="img-format" class="label"></div> -->
     <div id="img-container"></div>
     <canvas id="layerSlice"></canvas>
-    <canvas id="mobOut"></canvas>
+    <canvas id="mocout"></canvas>
 
     <!-- </div> -->
   </div>

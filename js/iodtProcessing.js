@@ -410,8 +410,9 @@ function writeOutLayerMapDiv() {
         newDiv.class = "mapBlocks"
         // newDiv.setAttribute("class", "colorMapBlocks") //CHANGE TO pairblocks if you want them stacked
         var canvas = document.createElement('canvas');
-        canvas.width = 50
-        canvas.height = 50
+        let size = 30
+        canvas.width = size
+        canvas.height = size
         var ctx = canvas.getContext("2d");
         let color = keys[i]
 
@@ -420,7 +421,7 @@ function writeOutLayerMapDiv() {
         newDiv.appendChild(canvas);
 
         // // console.log(color)
-        let size = 30
+
         ctx.font = size + "px Arial";
         ctx.beginPath()
         ctx.rect(x, y, size, size)

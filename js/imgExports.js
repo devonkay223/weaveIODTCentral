@@ -2,7 +2,7 @@ import { Vector2, Vector3 } from "three";
 import { cutPlane, lineData, numPieces, offset } from "./3d.js";
 import { getData } from "./graphVis/jsonEditor.js";
 import { colorPalette, imgRatio, vbH, vbW } from "./iodtProcessing.js";
-import { instantiateCanvases, svgMC } from "./main.js";
+import { instantiateCanvases, svgMC, zip } from "./main.js";
 
 export { reduceColors, convertSVGtoImg, warpEnds, calcHeight, downloadImage, setWarpEnds, createLayerSlice, createMoC }
 
@@ -15,6 +15,7 @@ const content = document.querySelector(".content");
 
 let warpEnds = 960;
 let calcHeight = 650
+let slices = 0
 // const canvas = document.getElementById("indexColors");
 // canvas.width = warpEnds
 // canvas.height = calcHeight
@@ -93,7 +94,7 @@ const getImageURL = async (svgURL, { format, quality }) => {
 
 
 // Reduce Colors: called form proxy in main after convert svg to image
-async function reduceColors(imgIn) {
+async function reduceColors(imgIn, downloadIn = 1) {
     const canvas = document.getElementById("indexColors");
     let repeats = getData("Loom", "NumberOfRepeats") ? getData("Loom", "NumberOfRepeats") : 1;
     canvas.width = warpEnds * repeats
@@ -141,7 +142,7 @@ async function reduceColors(imgIn) {
         mirroredData = await getMirrored(imageData)
 
     }
-    console.log(imageData, mirroredData)
+    // console.log(imageData, mirroredData)
     for (let i = 0; i < repeats; i++) {
         ctx.putImageData(imageData, i * warpEnds, 0);
         // if (rType == "mirrored" && i % 2 == 1) {
@@ -151,28 +152,29 @@ async function reduceColors(imgIn) {
         // }
     }
     // downloadReduced()
-
-    canvas.toBlob((blob) => {
-        if (!blob) return;
-        const imageUrl = URL.createObjectURL(blob)
-        // const img = new Image();
-        // img.src = imageUrl;
-        downloadImage(imageUrl, "MoB")
-
-
-        const img = document.createElement('img')
-        img.src = imageUrl
-        img.id = "jpegOut2"
-        // remove any existing image
-
-        // let loc = document.getElementById('finalImage')
-        // // loc.textContent = ''
-        // loc.append(img)
+    if (downloadIn) {
+        canvas.toBlob((blob) => {
+            if (!blob) return;
+            const imageUrl = URL.createObjectURL(blob)
+            // const img = new Image();
+            // img.src = imageUrl;
+            downloadImage(imageUrl, "MoB")
 
 
-        // Cleanup: Revoke the object URL when done to free memory
-        img.onload = () => URL.revokeObjectURL(imageUrl);
-    }, 'image/webp'); // Specify image format (e.g., 'image/jpeg')
+            const img = document.createElement('img')
+            img.src = imageUrl
+            img.id = "jpegOut2"
+            // remove any existing image
+
+            // let loc = document.getElementById('finalImage')
+            // // loc.textContent = ''
+            // loc.append(img)
+
+
+            // Cleanup: Revoke the object URL when done to free memory
+            img.onload = () => URL.revokeObjectURL(imageUrl);
+        }, 'image/webp'); // Specify image format (e.g., 'image/jpeg')
+    }
 
 }
 
@@ -289,7 +291,7 @@ function setWarpEnds(event) {
 
 }
 
-function createLayerSlice() {
+async function createLayerSlice(downloadIn = 0) {
     const canvas = document.getElementById("layerSlice");
     canvas.width = vbW + (offset * (numPieces - 1))
     canvas.height = vbH
@@ -338,33 +340,45 @@ function createLayerSlice() {
 
     }
 
-    canvas.toBlob((blob) => {
-        if (!blob) return;
-        const imageUrl = URL.createObjectURL(blob)
-        // const img = new Image();
-        // img.src = imageUrl;
-        downloadImage(imageUrl, "LayerMap")
+    if (downloadIn) {
+        canvas.toBlob((blob) => {
+            if (!blob) return;
+            const imageUrl = URL.createObjectURL(blob)
+            // const img = new Image();
+            // img.src = imageUrl;
+            downloadImage(imageUrl, "LayerMap")
 
 
-        const img = document.createElement('img')
-        img.src = imageUrl
-        img.id = "layerMapOut"
-        // remove any existing image
+            const img = document.createElement('img')
+            img.src = imageUrl
+            img.id = "layerMapOut"
+            // remove any existing image
 
-        // let loc = document.getElementById('finalImage')
-        // // loc.textContent = ''
-        // loc.append(img)
-
-
-        // Cleanup: Revoke the object URL when done to free memory
-        img.onload = () => URL.revokeObjectURL(imageUrl);
-    }, 'image/jpg'); // Specify image format (e.g., 'image/jpeg')
+            // let loc = document.getElementById('finalImage')
+            // // loc.textContent = ''
+            // loc.append(img)
 
 
+            // Cleanup: Revoke the object URL when done to free memory
+            img.onload = () => URL.revokeObjectURL(imageUrl);
+        }, 'image/jpg'); // Specify image format (e.g., 'image/jpeg')
+    } else {
+        const blobLayerSlice = await new Promise((resolve, reject) => {
+            canvas.toBlob(
+                (blob) => (blob ? resolve(blob) : reject(new Error("Failed to create MoC blob"))),
+                "image/png"
+            );
+        });
+        // Add PNG to ZIP
+        zip.file(document.getElementById("file-name-input").value + "_slice" + slices + ".png", blobLayerSlice);
+    }
+    slices++
 }
 
-function createMoC() {
-    const canvas = document.getElementById("mobOut");
+
+
+async function createMoC(downloadIn = 1) {
+    const canvas = document.getElementById("mocout");
     canvas.width = 1275
     canvas.height = 1550
     const ctx = canvas.getContext("2d")
@@ -384,26 +398,20 @@ function createMoC() {
         ctx.fillText(mapLabel.innerHTML, 100, 100 + svgMC.canvas.height + 50 * i)
     }
 
-    canvas.toBlob((blob) => {
-        if (!blob) return;
-        const imageUrl = URL.createObjectURL(blob)
-        // const img = new Image();
-        // img.src = imageUrl;
-        downloadImage(imageUrl, "MoB")
+    if (downloadIn) {
+        canvas.toBlob((blob) => {
+            if (!blob) return;
+            const imageUrl = URL.createObjectURL(blob)
+            downloadInInImage(imageUrl, "MoC")
 
 
-        const img = document.createElement('img')
-        img.src = imageUrl
-        img.id = "MoB"
-        // remove any existing image
+            const img = document.createElement('img')
+            img.src = imageUrl
+            img.id = "MoB"
 
-        // let loc = document.getElementById('finalImage')
-        // // loc.textContent = ''
-        // loc.append(img)
-
-
-        // Cleanup: Revoke the object URL when done to free memory
-        img.onload = () => URL.revokeObjectURL(imageUrl);
-    }, 'image/jpg'); // Specify image format (e.g., 'image/jpeg')
-
+            // Cleanup: Revoke the object URL when done to free memory
+            img.onload = () => URL.revokeObjectURL(imageUrl);
+        }, 'image/jpg'); // Specify image format (e.g., 'image/jpeg')
+    }
+    return canvas
 }
