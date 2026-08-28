@@ -86,7 +86,7 @@ h2 {
   /* margin: 0; */
   /* margin-bottom: 15%; */
   float: right;
-  overflow: hidden;
+  overflow: scroll;
 
 }
 
