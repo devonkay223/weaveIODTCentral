@@ -221,7 +221,7 @@ function loadIODT() {
     var reader = new FileReader();
     reader.onload = onReaderLoad;
     reader.readAsText(event.target.files[0]);
-    document.getElementById("file-name-input").value = event.target.files[0].name.split("_iodt.json")[0]
+    document.getElementById("file-name-input").value = event.target.files[0].name.split(".json")[0]
     // console.log(event.target.files[0].name)
 }
 

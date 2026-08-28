@@ -5,6 +5,7 @@ import pattern_api
 import ApiTypes
 import json
 import utility_api
+import os
 
 globalXOffset = 2000000
 globalYOffset = 2000000
