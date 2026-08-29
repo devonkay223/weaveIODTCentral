@@ -209,3 +209,7 @@ p {
   margin: 0 15px;
   display: inline;
 }
+
+.json-path-highlight {
+  --jse-contents-background-color: #fff3a3;
+}

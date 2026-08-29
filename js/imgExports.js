@@ -83,7 +83,7 @@ const getImageURL = async (svgURL, { format, quality }) => {
 
     calcHeight = (1 / imgRatio) * warpEnds//(img.naturalHeight / img.naturalWidth) * warpEnds
 
-    const imgCanvas = document.createElement('canvas')
+    const imgCanvas = document.getElementById("indexColors");//document.createElement('canvas')
 
     imgCanvas.width = warpEnds //img.naturalWidth
     imgCanvas.height = calcHeight
@@ -103,6 +103,7 @@ async function reduceColors(imgIn, downloadIn = 1) {
     // console.log("reducing colors", canvas.width, canvas.height)
     ctx.drawImage(imgIn, 0, 0, imgIn.width, imgIn.height, 0, 0, warpEnds, canvas.height);
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    console.log(imageData)
 
     let prevColor = []
     for (let i = 0; i < imageData.data.length; i += 4) {
@@ -137,11 +138,10 @@ async function reduceColors(imgIn, downloadIn = 1) {
     }
     let rType = getData("Loom", "TypeOfRepeat")
     let mirroredData
-
-    if (rType == "mirrored") {
-        mirroredData = await getMirrored(imageData)
-
-    }
+    // if (rType == "mirrored") {
+    //     mirroredData = await getMirrored(imageData)
+    console.log(imageData)
+    // }
     // console.log(imageData, mirroredData)
     for (let i = 0; i < repeats; i++) {
         ctx.putImageData(imageData, i * warpEnds, 0);
@@ -176,6 +176,7 @@ async function reduceColors(imgIn, downloadIn = 1) {
         }, 'image/webp'); // Specify image format (e.g., 'image/jpeg')
     }
 
+    return 0
 }
 
 async function getMirrored(imageData) {

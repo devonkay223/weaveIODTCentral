@@ -48,7 +48,7 @@ window.onload = function () {
 // const fileInput = document.querySelector("input[type=file]");
 const svgInput = document.getElementById("svg-upload")
 svgInput.addEventListener("change", previewSVG);
-const iodtInput = document.getElementById("iodt-upload").addEventListener("change", loadIODT); // TODO can this just be called direct in the onclick? 
+const iodtInput = document.getElementById("iodt-upload").addEventListener("change", loadIODT);
 document.getElementById("iodt-upload-button").addEventListener("click", iodtUploadClick)
 // document.getElementById("svg-upload-button").addEventListener("click", svgUploadClick)
 // document.getElementById("svg-to-jpg-button").addEventListener("click", convertSVGtoImg)
@@ -79,9 +79,9 @@ function doc_keyUp(e) {
     //     movePlaneDown()
     // }
 
-    if (e.key == 'p') {
-        createMoC();
-    }
+    // if (e.key == 'p') {
+    //     createMoC();
+    // }
 
 }
 
