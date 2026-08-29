@@ -234,7 +234,9 @@ async function onReaderLoad(event) {
     // alert_data(obj.name, obj.family);
     await parseInputToStandard(iodt)
 
-    extractData(iodt.SVG)
+    extractData()
+
+    // extractData(iodt.SVG)
     // renderData() graph vis 
 }
 

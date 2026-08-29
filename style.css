@@ -213,3 +213,7 @@ p {
 .json-path-highlight {
   --jse-contents-background-color: #fff3a3;
 }
+
+/* .jsoneditor {
+  --jse-font-size: 30px;
+} */

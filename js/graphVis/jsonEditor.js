@@ -10,6 +10,8 @@ export { instantiateEditor, updatedContent, downloadIODT, getJSON, getData, data
 let content;
 let editor;
 let dataDef;
+let highlightedPath = [[""]]
+
 
 async function instantiateEditor() {
     // var xobj = new XMLHttpRequest();
@@ -20,7 +22,7 @@ async function instantiateEditor() {
     // dataDef = JSON.parse(xobj.responseText);
 
     dataDef = await loadData()
-    console.log(dataDef)
+    // console.log(dataDef)
 
     // var dataDef = workingJSON
     // console.log(dataDef)
@@ -38,6 +40,7 @@ async function instantiateEditor() {
             onChange: (updatedContent, previousContent, { contentErrors, patchResult }) => {
                 // content is an object { json: JSONData } | { text: string }
                 // console.log('onChange', { updatedContent, previousContent, contentErrors, patchResult })
+                console.log('onChange', { patchResult })
                 content = updatedContent
                 if (patchResult.undo[0].path.includes("Color") || patchResult.undo[0].path.includes("LayerSystem")) {
                     // console.log("color changed", previousContent.patchResult)
@@ -45,12 +48,50 @@ async function instantiateEditor() {
                 }
             }
             ,
-            validator: createAjvValidator({ schema })
+            validator: createAjvValidator({ schema }),
+            onClassName: createHighlighter(highlightedPath)
         }
     });
 
     addStandardMenuItems()
 }
+
+function checkDependencies(pathIn) {
+    
+}
+
+
+function setHighlightedPaths(paths) {
+    highlightedPaths = paths
+
+    editor.updateProps({
+        onClassName: createHighlighter(highlightedPaths)
+    })
+}
+function isSamePath(a, b) {
+    return (
+        a.length === b.length &&
+        a.every((part, index) => part === b[index])
+    )
+}
+
+function createHighlighter(highlightedPaths = []) {
+    return (currentPath) => {
+        const isHighlighted = highlightedPaths.some((highlightedPath) => {
+            return (
+                highlightedPath.length <= currentPath.length &&
+                highlightedPath.every(
+                    (part, index) => part === currentPath[index]
+                )
+            )
+        })
+
+        return isHighlighted ? 'json-path-highlight' : undefined
+    }
+}
+
+
+
 
 async function loadData() {
     const response = await fetch('./dataDef.json');
@@ -153,6 +194,7 @@ const addNewStandardEntry = async e => {
 }
 
 function updatedContent() {
+    console.log("updating json")
     const contentNew = {
         json: workingJSON
     }

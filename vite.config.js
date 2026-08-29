@@ -1,5 +1,10 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-    base: '/weaveIODTCentral/'
+    base: '/weaveIODTCentral/',
+    server: {
+        watch: {
+            usePolling: true
+        }
+    }
 });

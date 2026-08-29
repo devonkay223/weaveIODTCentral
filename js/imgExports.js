@@ -78,6 +78,7 @@ const convertSVGtoImg = async e => {
 const getImageURL = async (svgURL, { format, quality }) => {
     // console.log("getImageIRL")
     const img = await loadImage(svgURL)
+    // console.log(img)
 
     warpEnds = getData("Loom", "TotalWarpEnds", 1)
 
@@ -88,6 +89,8 @@ const getImageURL = async (svgURL, { format, quality }) => {
     imgCanvas.width = warpEnds //img.naturalWidth
     imgCanvas.height = calcHeight
     imgCanvas.getContext('2d').drawImage(img, 0, 0, warpEnds, calcHeight)
+
+    console.log(imgCanvas.getContext('2d').getImageData(0, 0, imgCanvas.width, imgCanvas.height))
 
     return imgCanvas.toDataURL(`image/${format}`, quality)
 }
@@ -103,7 +106,7 @@ async function reduceColors(imgIn, downloadIn = 1) {
     // console.log("reducing colors", canvas.width, canvas.height)
     ctx.drawImage(imgIn, 0, 0, imgIn.width, imgIn.height, 0, 0, warpEnds, canvas.height);
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    console.log(imageData)
+    // console.log(imageData)
 
     let prevColor = []
     for (let i = 0; i < imageData.data.length; i += 4) {

@@ -18,98 +18,67 @@ let vbH
 
 let displayData = []
 
-function extractData(SVGdef = '') {
+function extractData() {//(SVGdef = '') {
+    //get current json form editor
     let iodt = getJSON()
-    // console.log(iodt)
-    // if (iodt) {
-    //     iodt = getJSON()
-    // }
-    // let iodt = getJSON()
+
     var keys = Object.keys(iodt.ArtworkAreas);
     const parser = new DOMParser();
     let svgContainer = document.getElementById("svg-container")
     // let svgUVMap = document.getElementById("svg-container-uvmap")
 
-    // json file from CLO contains high lvevl svg element that gets parsed out, but we only need it on the first pass
-    // if (iodt.SVG) {
-    //     let svgText = iodt.SVG
 
-    //     let pos1 = svgText.search("<svg")
-    //     let pos2 = svgText.search("</svg>")
-    //     let svgBody = svgText.substring(pos1, pos2 + 6)
-    //     var svgConvert = parser.parseFromString(svgBody, "text/html")
-    //     var svgHTML = svgConvert.querySelector("svg");
-    //     var svgHTMLMod = svgConvert.querySelector("svg");
+    // if (SVGdef) {
+    //get first svg def to grab high level svg data
+    // console.log(iodt.ArtworkAreas[keys[0]].SVG)
+    let svgText = iodt.ArtworkAreas[keys[0]].SVG //SVGdef
 
-
-    //     svgContainer.append(svgHTML)
-    //     let size = svgContainer.querySelector("svg").getAttribute("viewBox")
-    //     let vals = size.split(" ")
-    //     vbW = parseInt(vals[2])
-    //     vbH = parseInt(vals[3])
-
-    //     imgRatio = vbW / vbH
+    let pos1 = svgText.search("<svg")
+    let pos2 = svgText.search("</svg>")
+    let svgBody = svgText.substring(pos1, pos2 + 6)
+    var svgConvert = parser.parseFromString(svgBody, "text/html")
+    var svgHTML = svgConvert.querySelector("svg");
+    // var svgHTMLMod = svgConvert.querySelector("svg");
 
 
+    svgContainer.append(svgHTML)
+    //      svgMC.ctx.translate(0, scaledH);
+    // // Scale vertically (mirror Y-axis)  
+    // svgMC.ctx.scale(1, -1);
+    // svgMC.ctx.scale(scaledW / width, scaledH / height)
+    // const transform = svgContainer.querySelector("svg").createSVGTransform();
+    // transform.setScale(-1, 1)
+
+
+
+    let size = svgContainer.querySelector("svg").getAttribute("viewBox")
+    let vals = size.split(" ")
+    vbW = parseInt(vals[2])
+    vbH = parseInt(vals[3])
+
+    imgRatio = vbW / vbH
+
+    //apply transformaiton so its persistent in mob download
+    const svg = document.getElementById("svg-container").querySelector('svg');
+
+    const group = document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'g'
+    );
+
+    // svg.querySelectorAll('path').forEach(path => {
+    //     console.log(path)
+    //     group.appendChild(path);
+    // });
+
+    // svg.appendChild(group);
+    // group.setAttribute(
+    //     "transform",
+    //     // `translate(300, 300) scale(-.25 1)`
+    //     `translate(0 ${vbH}) scale(1 -1)`
+    // );
     // }
-    if (SVGdef) {
-        let svgText = SVGdef
 
-        let pos1 = svgText.search("<svg")
-        let pos2 = svgText.search("</svg>")
-        let svgBody = svgText.substring(pos1, pos2 + 6)
-        var svgConvert = parser.parseFromString(svgBody, "text/html")
-        var svgHTML = svgConvert.querySelector("svg");
-        // var svgHTMLMod = svgConvert.querySelector("svg");
-
-
-        svgContainer.append(svgHTML)
-        //      svgMC.ctx.translate(0, scaledH);
-        // // Scale vertically (mirror Y-axis)  
-        // svgMC.ctx.scale(1, -1);
-        // svgMC.ctx.scale(scaledW / width, scaledH / height)
-        // const transform = svgContainer.querySelector("svg").createSVGTransform();
-        // transform.setScale(-1, 1)
-
-
-
-        let size = svgContainer.querySelector("svg").getAttribute("viewBox")
-        let vals = size.split(" ")
-        vbW = parseInt(vals[2])
-        vbH = parseInt(vals[3])
-
-        imgRatio = vbW / vbH
-
-        //apply transformaiton so its persistent in mob download
-        const svg = document.getElementById("svg-container").querySelector('svg');
-
-        const group = document.createElementNS(
-            'http://www.w3.org/2000/svg',
-            'g'
-        );
-
-        svg.querySelectorAll('path').forEach(path => {
-            console.log(path)
-            group.appendChild(path);
-        });
-
-        svg.appendChild(group);
-        group.setAttribute(
-            "transform",
-            // `translate(300, 300) scale(-.25 1)`
-            `translate(0 ${vbH}) scale(1 -1)`
-        );
-    }
-
-
-    // let size = svgContainer.querySelector("svg").getAttribute("viewBox")
-    // let vals = size.split(" ")
-    // vbW = parseInt(vals[2])
-    // vbH = parseInt(vals[3])
-
-    // imgRatio = vals[2] / vals[3]
-
-    // instantiateCanvases(vals[2], vals[3])
     instantiateCanvases(vbW, vbH)
     cleanScene()
 
@@ -127,7 +96,8 @@ function extractData(SVGdef = '') {
             let d = pathHTML.getAttribute("d")
             // svgContainer.appendChild(pathHTML)
             np = new PatternPiece(keys[i], d, iodt.ArtworkAreas[keys[i]].Color, iodt.ArtworkAreas[keys[i]].LayerSystem, iodt.ArtworkAreas[keys[i]].ID)
-            patternPieces.push(np)
+            // patternPieces.push(np)
+            group.appendChild(pathHTML);
             writeSVGPath(pathHTML, iodt.ArtworkAreas[keys[i]].Color)
             for (let j = 0; j < np.layersCount; j++) {
                 // writeSVGPath(pathHTML, j)
@@ -148,6 +118,13 @@ function extractData(SVGdef = '') {
 
     }
     // svgHTML.setAttribute("viewBox", "0 0 3000 8000")
+    svg.appendChild(group);
+    group.setAttribute(
+        "transform",
+        // `translate(300, 300) scale(-.25 1)`
+        `translate(0 ${vbH}) scale(1 -1)`
+    );
+
     writeOutLayerMapDiv()
 }
 
@@ -343,33 +320,6 @@ function hexToRgb(hex) {
 
 // alert(hexToRgb("#0033ff").g); // "51";
 
-
-
-// function parseSewing(patternIn, data, smlp) {
-//     // TODO find macthed edges?? --> in theory the two pieces touch in the svg.... so just figure out shared edges?? 
-//     // 
-//     for (let j = 0; j < smlp.length; j++) {
-//         let p1 = smlp[j][0]
-//         let p2 = smlp[j][1]
-//         let l1 = data.NamesMap[p1]
-//         let l2 = data.NamesMap[p2]
-//         // // console.log(p1, p2)
-//         let p2mapped = getPatternMapped(p2, data.NamesMap, data.PatternMap, data)
-
-//         patternIn.addSeam(l1, p2mapped, l2)
-//     }
-// }
-
-// function getPatternMapped(pIn, NamesMap, PatternMap, data) {
-//     // // console.log(pIn, NamesMap[pIn])
-//     if (data.Pattern[NamesMap[pIn]] != undefined) {
-//         // // console.log("macthed: ", NamesMap[pIn])
-//         return NamesMap[pIn]
-//     } else {
-//         return getPatternMapped(PatternMap[pIn], NamesMap, PatternMap, data)
-//     }
-
-// }
 
 //maybe this doesn't go in here? 
 function writeOutLayerMap() {
