@@ -1,3 +1,8 @@
 node_modules/*
-Scripts/*
-!Scripts/29_8_26_CloExport.py
+
+.gitignore
+Scripts/oldCloExport.py
+Scripts/tes
+Scripts/testagain.py
+Scripts/newCloExport.py
+Scripts/26_10_1_CreateArtwork.py

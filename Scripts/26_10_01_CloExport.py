@@ -15,9 +15,11 @@ globalYOffset = 2000000
 patternPieceMap = {} # map of which pattern form pieces correspond to artwork pattern pieces 
 selectedPatternIDs = [] # list of ids for selected pattern pieces (ie artwork pieces)
 svgElements =[] # list of all generated svg path created for artwork pattern pieces 
-svgFile # ref to svg file so paths can be written in 
-data # data from clo genearted JSON file 
+svgFile ='' # ref to svg file so paths can be written in 
+data ='' # data from clo genearted JSON file 
 seamLinePairs = {}
+svgHeader =''
+patternPieces = ''
 
 # ____ SVG _____
 
@@ -43,7 +45,7 @@ def convertLinesToSVG(linesListIn, fillColor):
     
     svgFile.write(svgOut) # write path to artwork svg file
     
-    return svgOut
+    return svgHeader + svgOut + "</svg>"
     
 
 
@@ -114,21 +116,24 @@ def zeroPiecePatternData(formNameIn, formIndexIn, selectedEqIn):
 
 
 def genSeamLineData():
-    global pairs
+    ''' Extracts seamline pairs data from clo generated JSON.  '''
+    global seamLinePairs
 
     for seam in data["SeamLinePairGroupList"]:
         first  =seam["PairList"][0]["First"]
         second  = seam["PairList"][0]["Second"]
-        pairs[first["ShapeID"]] =  [first["LineID"], second["ShapeID"], second["LineID"]]
+        seamLinePairs[first["ShapeID"]] =  [first["LineID"], second["ShapeID"], second["LineID"]]
 
 
 def getShapeSeams(formIDIn, geometryIn):
-    if pairs[formID]: 
-        for line in geometryIn: 
-            if line["ID"] == pairs[formID][0]:
-                line["ID"]["SeamPair"] = [pairs[formID][1][2]]
+    '''
+    matches seamline pairs to shape and lines and adds paired shape/line info to geometry definition
+    '''
+    if formIDIn in seamLinePairs: 
+        for i, line in enumerate(geometryIn): 
+            if line["ID"] == seamLinePairs[formIDIn][0]:
+                geometryIn[i]["SeamPair"] = {"shapeId": seamLinePairs[formIDIn][1], "lineId": seamLinePairs[formIDIn][2]}
 
-    print geometryIn
     return geometryIn
 
 
@@ -157,14 +162,14 @@ def getArtworkData(patternNameIn):
     '''
     Creates artwork pattern piece entry and sources data for index, name, id, svg path, layer systems, and form relationship 
     '''
-    global svgElements
+    global svgElements, data
     
     pIndex = pattern_api.GetPatternIndex(patternNameIn)
     fIndex = fabric_api.GetFabricIndexForPattern(pIndex)
     fName = fabric_api.GetFabricName(fIndex)
     fInfo = fabric_api.GetFabricInformationW(fIndex)
     fColor = fInfo["ColorCode"]
-    pData = getPatternData(patternNameIn) # extracts pattern data from project JSON 
+    pData = getPatternData(patternNameIn, data) # extracts pattern data from project JSON 
     pLines = pData[0] 
     pID = pData[1]
         
@@ -239,7 +244,7 @@ def findSelectedEquivalent(id):
 
 
 # _____ Other _____
-def createUnique_File(pathIn):
+def createUniqueFile(pathIn):
     base, ext = os.path.splitext(pathIn)
     index = 0
 
@@ -261,7 +266,7 @@ def main():
     # create driver function that is called in main - reduce amount of code in main function
     # improve error handling for users
 
-    global globalXOffset, globalYOffset, svgFile, data
+    global globalXOffset, globalYOffset, svgFile, data, svgHeader, patternPieces
 
 
     # get project path location 
@@ -295,13 +300,14 @@ def main():
 
     # Create SVG file 
     svgHeader =  "<svg xmlns='http://www.w3.org/2000/svg'  version='1.1' viewBox='0 0 " + str(int(width)) + " " + str(int(height)) +"'>"
-    svgPath = create_unique_file(path + ".svg")
+    svgPath = createUniqueFile(path + ".svg")
     svgFile = open(svgPath, "w", encoding="utf-8")
     svgFile.write(svgHeader)
 
 
 
     #Establish iodt data entries
+    iodtData = {}
     iodtData["ArtworkAreas"] = {}
     iodtData["FormPieces"] = {}
 
@@ -328,7 +334,7 @@ def main():
     iodtData["SVG"] = svgHeader + ' '.join(str(x) for x in svgElements) + "</svg>"
 
     # create iodt file and populate
-    iodtFilePath = create_unique_file(path+"_iodt.json") 
+    iodtFilePath = createUniqueFile(path+"_iodt.json") 
     iodtFile = open(iodtFilePath, "w", encoding="utf-8") 
     json_iodt = json.dumps(iodtData, indent=4)
     iodtFile.write(json_iodt)
@@ -343,10 +349,12 @@ def main():
     else:
         print("The generated file does not exist")
         
-    print(jsonpath)
 
 
 if __name__ == "__main__":
     main()
+
+
+
 
 
