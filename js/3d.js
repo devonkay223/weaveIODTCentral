@@ -19,7 +19,7 @@ import { vbH, vbW } from './iodtProcessing.js';
 // const MeshLineRaycast = require('three.meshline').MeshLineRaycast;
 
 
-export { instatiate3D, addPlane, addSVGGeometry, cleanScene, renderSVGAsLines3D, addCutPlane, movePlaneUp, movePlaneDown, lineData, cutPlane, offset, numPieces }
+export { instatiate3D, addPlane, addSVGGeometry, cleanScene, renderFormPieces3D, renderSVGAsLines3D, addCutPlane, movePlaneUp, movePlaneDown, lineData, cutPlane, offset, numPieces }
 
 let scene;
 let camera;
@@ -107,7 +107,7 @@ function addSVGGeometry() {
     //         // Create a mesh and add it to the group
     //         const mesh = new THREE.Mesh(geometry, material);
 
-    //         svgGroup.add(mesh);
+    //         svgscene.add(mesh);
     //     });
     // });
     // // console.log(paths)
@@ -140,7 +140,7 @@ function addSVGGeometry() {
             const shape = shapes[j];
             const geometry = new THREE.ShapeGeometry(shape);
             const mesh = new THREE.Mesh(geometry, material);
-            group.add(mesh);
+            scene.add(mesh);
         }
     }
 
@@ -296,6 +296,10 @@ function renderSVGAsLines3D(pathIn, colorIn, layerIn = 0, Offset = 0) {
 
     // vect3RenderDEBUG()
 }
+
+
+
+
 
 function vect3RenderDEBUG() {
     for (let vect in allVect3) {
@@ -465,9 +469,7 @@ function addBezier(x1, y1, x2, y2, x3, y3, x4, y4, z = 0, materialIN) {
     return points
 }
 
-function renderSewing() {
 
-}
 
 /* <path class="cls-4" d="m299,666.5H0V0h103.5s.5,226,97.5,308c115.5,98.5,98,358.5,98,358.5"/>
     <path class="cls-2" d="m288,308C191,226,190.5,0,190.5,0h602s-.5,226-97,308c-116,98.5-98.5,358.5-98.5,358.5h-211s17.5-260-98-358.5"/>
@@ -738,4 +740,324 @@ function parseSvgPath(d) {
 
     // // console.log(curves)
     return curves;
+}
+
+// Add renderFormPieces3D to the existing export list.
+
+function renderFormPieces3D(input, options = {}) {
+    const formPieces = input?.FormPieces ?? input;
+    const entries = Array.isArray(formPieces)
+        ? formPieces.map((piece, index) => [
+            piece?.Name ?? piece?.name ?? piece?.LayerSystem ?? `P${index + 1}.1`,
+            piece
+        ])
+        : Object.entries(formPieces ?? {});
+
+    const asList = value => {
+        if (Array.isArray(value)) return value;
+        if (value && typeof value === 'object') return Object.values(value);
+        return [];
+    };
+
+    const normalizedId = value => value == null ? null : String(value);
+    const field = (object, name) => {
+        if (!object || typeof object !== 'object') return undefined;
+        const wanted = name.replace(/[_\s-]/g, '').toLowerCase();
+        const key = Object.keys(object).find(
+            candidate => candidate.replace(/[_\s-]/g, '').toLowerCase() === wanted
+        );
+        return key ? object[key] : undefined;
+    };
+
+    const getPosition = point => {
+        const position = point?.Position ?? point?.position ?? point;
+        const x = Number(Array.isArray(position) ? position[0] : position?.x ?? position?.X);
+        const y = Number(Array.isArray(position) ? position[1] : position?.y ?? position?.Y);
+        return Number.isFinite(x) && Number.isFinite(y) ? { x, y } : null;
+    };
+
+    const maxLayer = Math.max(
+        1,
+        ...entries.map(([name]) => Number(name.match(/\.(\d+)$/)?.[1] ?? 1))
+    );
+    const pieces = entries.map(([name, piece]) => {
+        const match = String(name).match(/^(P\d+)\.(\d+)$/);
+        const lines = asList(piece?.Geometry);
+        const xs = lines.flatMap(line =>
+            asList(line?.PointList)
+                .map(getPosition)
+                .filter(Boolean)
+                .map(position => position.x)
+        );
+
+        return {
+            name: String(name),
+            piece: piece ?? {},
+            family: match?.[1] ?? String(name),
+            lines,
+            minX: xs.length ? Math.min(...xs) : 0,
+            maxX: xs.length ? Math.max(...xs) : 0,
+            z: (maxLayer - Number(match?.[2] ?? 1)) * (options.layerSpacing ?? 75)
+                + (Number(match?.[1]?.match(/\d+/)?.[0] ?? 1) % 2 === 0
+                    ? (options.layerSpacing ?? 75) / 2
+                    : 0),
+            xOffset: 0
+        };
+    });
+
+    const artworkAreas = Object.values(input?.ArtworkAreas ?? {});
+    const colorByPieceName = new Map();
+
+    for (const artwork of artworkAreas) {
+        for (const pieceName of artwork.Mappings?.FormPieces ?? []) {
+            colorByPieceName.set(String(pieceName), artwork.Color);
+        }
+    }
+
+    for (const piece of pieces) {
+        piece.color =
+            colorByPieceName.get(piece.name) ??
+            options.color ??
+            0x00ff00;
+    }
+
+    // Keep stacked layers together and separate distinct piece families horizontally.
+    let cursor = 0;
+    const families = new Map();
+    for (const piece of pieces) {
+        if (!families.has(piece.family)) families.set(piece.family, []);
+        families.get(piece.family).push(piece);
+    }
+
+    const orderedFamilies = [...families.entries()].sort(([a], [b]) => {
+        const aNumber = Number(a.match(/^P(\d+)$/)?.[1] ?? Infinity);
+        const bNumber = Number(b.match(/^P(\d+)$/)?.[1] ?? Infinity);
+        return aNumber - bNumber || a.localeCompare(b);
+    });
+
+    for (const [, familyPieces] of orderedFamilies) {
+        const minX = Math.min(...familyPieces.map(piece => piece.minX));
+        const maxX = Math.max(...familyPieces.map(piece => piece.maxX));
+        const shift = cursor
+
+        for (const piece of familyPieces) piece.xOffset = shift;
+
+        cursor += (options.pieceGap ?? 50) //center + (options.pieceGap ?? 10)
+    }
+
+    const group = new THREE.Group();
+    const renderedSeams = new Set();
+
+    function addPolyline(points, material) {
+        const coordinates = points.map(point => {
+            if (point?.isVector3) return [point.x, point.y, point.z];
+            if (Array.isArray(point)) return point;
+            if (point && typeof point === 'object') return [point.x, point.y, point.z];
+            return null;
+        }).filter(point =>
+            point?.length >= 3 && point.every(Number.isFinite)
+        );
+
+        if (coordinates.length < 2) return;
+
+        const geometry = new MeshLineGeometry();
+        geometry.setPoints(coordinates);
+
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.raycast = raycast;
+        group.add(mesh);
+    }
+
+    function findTarget(shapeID, lineID) {
+        const wantedShape = normalizedId(shapeID);
+        const wantedLine = normalizedId(lineID);
+
+        for (const piece of pieces) {
+            const pieceIds = [
+                piece.piece.ID,
+                piece.piece.ShapeID,
+                piece.name,
+                piece.piece.Name
+            ].map(normalizedId);
+
+            for (const [index, line] of piece.lines.entries()) {
+                const lineShapeIds = [
+                    line?.ShapeID,
+                    line?.shapeID,
+                    line?.ID
+                ].map(normalizedId);
+
+                const lineIds = [
+                    line?.LineID,
+                    line?.lineID,
+                    line?.ID,
+                    line?.id,
+                    index
+                ].map(normalizedId);
+
+                const shapeMatches =
+                    pieceIds.includes(wantedShape) ||
+                    lineShapeIds.includes(wantedShape);
+
+                if (!shapeMatches || !lineIds.includes(wantedLine)) continue;
+
+                const points = asList(line?.PointList)
+                    .map(point => ({ point, position: getPosition(point) }))
+                    .filter(entry => entry.position);
+
+                if (points.length) return { piece, line, points };
+            }
+        }
+
+        return null;
+    }
+
+    function connectSeam(sourcePiece, sourceLine, sourcePoints, sourceIndex, seam) {
+        const shapeID = field(seam, 'shapeID');
+        const lineID = field(seam, 'lineID');
+        if (shapeID == null || lineID == null) return;
+
+        const target = findTarget(shapeID, lineID);
+        if (!target) return;
+
+        const sourceEntry = sourcePoints[sourceIndex];
+        if (!sourceEntry) return;
+
+        const explicitPointID =
+            field(seam, 'pointID') ??
+            field(seam, 'targetPointID');
+
+        let targetIndex = explicitPointID == null
+            ? -1
+            : target.points.findIndex(({ point }) =>
+                [point?.ID, point?.id, point?.PointID, point?.pointID]
+                    .some(id => normalizedId(id) === normalizedId(explicitPointID))
+            );
+
+        if (targetIndex < 0) {
+            // Match corresponding positions along the lines; reverse if their
+            // endpoint directions align better that way.
+            const sourceStart = sourcePoints[0].position;
+            const sourceEnd = sourcePoints[sourcePoints.length - 1].position;
+            const targetStart = target.points[0].position;
+            const targetEnd = target.points[target.points.length - 1].position;
+            const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+            const reverse =
+                distance(sourceStart, targetEnd) + distance(sourceEnd, targetStart) <
+                distance(sourceStart, targetStart) + distance(sourceEnd, targetEnd);
+
+            const progress = sourcePoints.length > 1
+                ? sourceIndex / (sourcePoints.length - 1)
+                : 0;
+            const targetProgress = reverse ? 1 - progress : progress;
+            targetIndex = Math.round(targetProgress * (target.points.length - 1));
+        }
+
+        const targetEntry = target.points[targetIndex];
+        if (!targetEntry) return;
+
+        const source = new THREE.Vector3(
+            sourceEntry.position.x + sourcePiece.xOffset,
+            sourceEntry.position.y,
+            sourcePiece.z
+        );
+        const destination = new THREE.Vector3(
+            targetEntry.position.x + target.piece.xOffset,
+            targetEntry.position.y,
+            target.piece.z
+        );
+
+        const pointKey = point => [
+            point.x.toFixed(4),
+            point.y.toFixed(4),
+            point.z.toFixed(4)
+        ].join(',');
+        const seamKey = [pointKey(source), pointKey(destination)].sort().join('|');
+
+        if (renderedSeams.has(seamKey)) return;
+        renderedSeams.add(seamKey);
+
+        const material = new MeshLineMaterial({
+            color: options.seamColor ?? 0x00000ff,
+            lineWidth: options.seamLineWidth ?? 3,
+            resolution,
+            sizeAttenuation: false,
+            depthWrite: false,
+            depthTest: false,
+            transparent: true
+        });
+
+        const geometry = new THREE.BufferGeometry().setFromPoints([
+            source,
+            destination
+        ]);
+
+        const seamLine = new THREE.Line(geometry, material);
+        seamLine.renderOrder = 1;
+        group.add(seamLine);
+    }
+
+    for (const piece of pieces) {
+        for (const line of piece.lines) {
+            const sourcePoints = asList(line?.PointList)
+                .map((point, index) => ({ point, position: getPosition(point), index }))
+                .filter(entry => entry.position);
+
+            if (sourcePoints.length < 2) continue;
+
+            const vectors = sourcePoints.map(({ position }) =>
+                new THREE.Vector3(position.x + piece.xOffset, position.y, piece.z)
+            );
+
+            let sampled = vectors;
+            if (
+                vectors.length === 4 &&
+                sourcePoints.slice(1, 3).some(
+                    entry => entry.point?.PointType === 'Bezier Curve'
+                )
+            ) {
+                sampled = new THREE.CubicBezierCurve3(...vectors).getPoints(
+                    options.sampleCount ?? pointsSampleSize
+                );
+            }
+
+            const lineMaterial = new MeshLineMaterial({
+                color: piece.color,
+                opacity: 1,
+                resolution,
+                sizeAttenuation: false,
+                lineWidth: options.lineWidth ?? 25,
+                depthWrite: false,
+                depthTest: false,
+                transparent: true
+            });
+            addPolyline(sampled, lineMaterial);
+
+            // Resolve each point's SeamPair against the supplied IODT geometry.
+            sourcePoints.forEach(({ point }, index) => {
+                const seamData = field(point, 'SeamPair');
+                const seams = Array.isArray(seamData) ? seamData : [seamData];
+
+                for (const seam of seams) {
+                    if (seam) connectSeam(piece, line, sourcePoints, index, seam);
+                }
+            });
+
+            // A line-level SeamPair connects both line endpoints.
+            const lineSeam = field(line, 'SeamPair');
+            if (lineSeam) {
+                connectSeam(piece, line, sourcePoints, 0, lineSeam);
+                connectSeam(
+                    piece,
+                    line,
+                    sourcePoints,
+                    sourcePoints.length - 1,
+                    lineSeam
+                );
+            }
+        }
+    }
+
+    scene.add(group);
+    return group;
 }

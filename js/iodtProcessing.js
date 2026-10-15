@@ -1,7 +1,7 @@
 import { colorMapMC, instantiateCanvases, patternPieces, svgMC, writeSVGPath } from "./main.js";
 import PatternPiece from "./PatternPiece.js";
 import DataDisplay from "./DataDisplay.js";
-import { cleanScene, renderSVGAsLines3D } from "./3d.js";
+import { cleanScene, renderSVGAsLines3D, renderFormPieces3D } from "./3d.js";
 import { setWarpEnds } from "./imgExports.js";
 import { dataDef, getJSON, updatedContent } from "./graphVis/jsonEditor.js";
 // import { color } from "three/tsl";
@@ -79,6 +79,8 @@ function extractData() {//(SVGdef = '') {
     // );
     // }
 
+    renderFormPieces3D(iodt, { pieceGap: 75 })
+
     instantiateCanvases(vbW, vbH)
     cleanScene()
 
@@ -99,17 +101,17 @@ function extractData() {//(SVGdef = '') {
             // patternPieces.push(np)
             group.appendChild(pathHTML);
             writeSVGPath(pathHTML, iodt.ArtworkAreas[keys[i]].Color)
-            for (let j = 0; j < np.layersCount; j++) {
-                // writeSVGPath(pathHTML, j)
-                renderSVGAsLines3D(pathHTML.getAttribute("d"), np.color, j, (np.layersCount - j) * 20)//i * 75) //, keys[i] + "_" + j)
-                // if (j > 0) {
-                //     // let svgUVMapSVG = document.getElementById("svg-container-uvmap").querySelector("svg")
-                //     // pathHTML.setAttribute("transform", "translate(0 " + j * height + ")")
-                //     pathHTML.setAttribute("transform", "translate(0 " + j + ")")
-                //     svgHTMLMod.appendChild(pathHTML)
-                //     // // console.log(pathHTML, j)
-                // }
-            }
+            // for (let j = 0; j < np.layersCount; j++) {
+            //     // writeSVGPath(pathHTML, j)
+            //     renderSVGAsLines3D(pathHTML.getAttribute("d"), np.color, j, (np.layersCount - j) * 20)//i * 75) //, keys[i] + "_" + j)
+            //     // if (j > 0) {
+            //     //     // let svgUVMapSVG = document.getElementById("svg-container-uvmap").querySelector("svg")
+            //     //     // pathHTML.setAttribute("transform", "translate(0 " + j * height + ")")
+            //     //     pathHTML.setAttribute("transform", "translate(0 " + j + ")")
+            //     //     svgHTMLMod.appendChild(pathHTML)
+            //     //     // // console.log(pathHTML, j)
+            //     // }
+            // }
         }
         // if (iodt.Pattern[keys[i]].SeamLinePairs) {
         //     // // console.log("seamlines")
