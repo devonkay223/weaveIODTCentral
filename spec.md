@@ -73,7 +73,4 @@
 - 'Name' (required, unique string)
   - 'FiberComposition' (optional, string)
   - 'Color' (optional, hex color)
-
-
-## Size
-## Blend
+  - 'Size' (optional)
