@@ -12,11 +12,11 @@
 
 
 ## Loom  
-- `TotalWarpEnds` (required, int) is the number of warp ends.  
+- `TotalWarpEnds` (required, int) is the number of total warp ends in a single repeat.   
 - `TotalDesignHooks` (optional, int) is the number of warp ends per repeat.
 - `WeftSelectors` (optional, int) is the number of weft yarns available. 
 - `EndsPerCm` (optional, int) is the number of warp ends per cm.  
-- `NumberOfRepeats` (optional, int) is the number of pattern repeats on loom. 
+- `NumberOfRepeats` (optional, int) is the number of pattern repeats on loom. MoC will export at a width of NumRepeats * TotalWarpEnds. 
 - `TypesOfRepeat` (optional, mirrored/reg) is the repeat type for the loom. 
 - `Mappings`
   - `Fiber` (optional, array of Fiber ref) array containing fiber id and ends distribution (start, end)
