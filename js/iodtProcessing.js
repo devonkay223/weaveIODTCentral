@@ -6,9 +6,10 @@ import { setWarpEnds } from "./imgExports.js";
 import { dataDef, getJSON, updatedContent } from "./graphVis/jsonEditor.js";
 // import { color } from "three/tsl";
 
-export { colorPalette, extractData, imgRatio, workingJSON, vbW, vbH, parseInputToStandard }
+export { colorPalette, colorPaletteHex, extractData, imgRatio, workingJSON, vbW, vbH, parseInputToStandard }
 
 let colorPalette = [];
+let colorPaletteHex = []
 let colorLayerMap = new Object();
 let height = 1000
 let imgRatio;
@@ -83,12 +84,14 @@ function extractData() {//(SVGdef = '') {
 
     instantiateCanvases(vbW, vbH)
     cleanScene()
+    let tempHexCol = []
 
     colorLayerMap = new Object();
     for (var i = 0; i < keys.length; i++) {
         let np;
         // patternPieces = []
         colorPalette.push(hexToRgb(iodt.ArtworkAreas[keys[i]].Color))
+        tempHexCol.push(iodt.ArtworkAreas[keys[i]].Color)
         // console.log(colorPalette)
         colorLayerMap[iodt.ArtworkAreas[keys[i]].Color] = iodt.ArtworkAreas[keys[i]].LayerSystem
         if (iodt.ArtworkAreas[keys[i]].SVG) {
@@ -119,6 +122,8 @@ function extractData() {//(SVGdef = '') {
         // }
 
     }
+
+    colorPaletteHex = new Set(tempHexCol)
     // svgHTML.setAttribute("viewBox", "0 0 3000 8000")
     svg.appendChild(group);
     group.setAttribute(

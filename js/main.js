@@ -6,6 +6,7 @@ import { extractData, parseInputToStandard } from "./iodtProcessing.js";
 import MainCanvas from "./MainCanvas.js";
 import { convertSVGtoImg, reduceColors, downloadImage, setWarpEnds, createLayerSlice, createMoC } from "./imgExports.js";
 import JSZip from 'jszip';
+import { genAdaCADWorkspace } from "./AdaCADExport.js";
 
 // import { reduceColors } from "./svgtojpg.js";
 export { svgMC, dGraphMC, colorMapMC, writeSVGPath, patternPieces, instantiateCanvases, zip }
@@ -55,6 +56,7 @@ document.getElementById("iodt-upload-button").addEventListener("click", iodtUplo
 document.getElementById("jpg-reduce-colors-button").addEventListener("click", reduceColorsProxy)
 document.getElementById("moc-button").addEventListener("click", createMoC)
 document.getElementById("iodt-download-button").addEventListener("click", downloadIODT)
+document.getElementById("adacad-download-button").addEventListener("click", genAdaCADWorkspace)
 document.getElementById("zip-files-button").addEventListener("click", downloadZip)
 
 document.getElementById("cut-plane-button").addEventListener("click", addCutPlane)
