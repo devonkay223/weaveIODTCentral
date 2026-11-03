@@ -1,4 +1,4 @@
-import { getData, getJSON } from "./graphVis/jsonEditor.js"
+import { dataDef, getData, getJSON } from "./graphVis/jsonEditor.js"
 import { colorPaletteHex, imgRatio } from "./iodtProcessing.js"
 
 export { genAdaCADWorkspace }
@@ -37,35 +37,37 @@ function genAdaCADWorkspace() {
         const art = artworkData[keys[i]]
         const ls = art.LayerSystem.toLowerCase()
 
-        //TODO add weave structures from weave for single spec structure 
-        // this doesnt account for complex structures like layers that are merged --> c an it? 
-        // NOTE this is a hack to assign the same structure to all inputs
-        //TODO add individual structure parsing 
+
+        // NOTE putting a weave structure name into WeaveStructureCompiled is a hack to assign the same structure to all inputs
         const weave = art.Mappings.WeaveStructureCompiled
         let weaves = []
 
         addWeave(weave)
 
+        //check if weave is specified at form level 
+        if (weave == '') {
+            const forms = art.Mappings.FormPieces
+            const formData = json["FormPieces"]
+            for (let j = 0; j < forms.length; j++) {
+                let fWeave = formData[forms[j]].Mappings.WeaveStructure
+                if (fWeave != "") {
+                    addWeave(fWeave)
+                    weaves.push(fWeave)
+                }
+            }
+        } else {
+            //if specified at artwork level parse
+            addWeave(weave)
+            weaves.push(weave)
+        }
 
-        // if (weave == '') {
-        //     const forms = art.Mappings.FormPieces
-        //     var formKeys = Object.keys(forms)
-        //     for (let j = 0; j < formKeys.length; j++) {
-        //         let fWeave = forms[formKeys[i]].Mappings.WeaveStructure
-        //         if (fWeave != "") {
-        //             addWeave(fWeave)
-        //             weaves.push(fWeave)
-        //         }
-        //     }
-        // } else {
-        //     addWeave(weave)
-        //     weaves.push(weave)
-        // }
-
-        console.log(weave, weaveMap)
         if (!systemsAdded.includes(ls)) {
-            addLayerNotation(ls, draftyID, i, weave != '' ? weaveMap[weave] : 0)
+            addLayerNotation(ls, draftyID, i, weaves)
             systemsAdded.push(ls)
+        } else if (weaves.length != 0) {
+            //if weave structure needs to be connected to a layer system but the ls already exists, add connection (will overwrite if there are conflicting specs)
+            let opId = findOpID("notation", ls)
+            connectWeavestoLayer(weaves, opId)
         }
     }
 
@@ -101,12 +103,12 @@ function addWeave(weaveIn) {
         }
 
         let id = genID()
-
+        let x = 2231.023102310231 + ((Object.keys(weaveMap).length) * 1000)
         let node = {
             "node_id": id,
             "type": "op",
             "topleft": {
-                "x": 2231.023102310231,
+                "x": x,
                 "y": 138.6138613861386
             }
         }
@@ -131,12 +133,21 @@ function addWeave(weaveIn) {
     }
 }
 
+function findOpID(nameIn, paramIn = '') {
+    const source = adaJSONBase["ops"]
+    for (let i = 0; i < source.length; i++) {
+        if (source[i].name == nameIn && source[i].params[0] == paramIn) {
+            return source[i].node_id
+        }
+    }
 
-function addLayerNotation(systemIn, draftyID, i, weaveId = 0) {
+}
+
+
+function addLayerNotation(systemIn, draftyID, i, weaveArray = []) {
     let opID = genID() //gen unique id
 
     let x = 1389.1050583657586 + (i * 850)
-    console.log(i, x)
     let node = {
         "node_id": opID,
         "type": "op",
@@ -172,11 +183,20 @@ function addLayerNotation(systemIn, draftyID, i, weaveId = 0) {
     addToBase(node, tree, op)
     genDraft(opID) //draft that gets nested into operation for preview
     genConnection(draftyID, opID)
-    // applies the same weave structure to all inlets 
-    if (weaveId) {
-        console.log("weave id in:", weaveId)
+    connectWeavestoLayer(weaveArray, opID, inlets)
+}
+
+function connectWeavestoLayer(weaveArray, opID, inlets) {
+    if (weaveArray.length == 1) {
         for (let i = 0; i < (inlets.length - 1); i++) {
-            genConnection(weaveId, opID)
+            genConnection(weaveMap[weaveArray[0]], opID)
+        }
+    }
+
+    // weave per layer 
+    if (weaveArray.length > 1) {
+        for (let i = 0; i < (inlets.length - 1); i++) {
+            genConnection(weaveMap[weaveArray[i]], opID)
         }
     }
 }
