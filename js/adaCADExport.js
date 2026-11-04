@@ -1,13 +1,13 @@
 import { dataDef, getData, getJSON } from "./graphVis/jsonEditor.js"
 import { colorPaletteHex, imgRatio } from "./iodtProcessing.js"
 
-export { genAdaCADWorkspace }
+export { exportAdaCAD }
 
 let adaJSONBase = {}
 let weaveMap = { "": "" }
 
 
-function genAdaCADWorkspace() {
+async function genAdaCADWorkspace() {
     let json = getJSON()
 
 
@@ -71,25 +71,25 @@ function genAdaCADWorkspace() {
         }
     }
 
-
-    exportAdaCAD()
 }
 
+//not inlcuded in zip file
+async function exportAdaCAD(download = 1) {
 
-function exportAdaCAD() {
+    await genAdaCADWorkspace()
     let exportName = document.getElementById("file-name-input").value
 
     var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(adaJSONBase, null, 4));
-    // if (download) {
-    var downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", exportName + ".ada");
-    document.body.appendChild(downloadAnchorNode); // required for firefox
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-    // }
+    if (download) {
+        var downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", exportName + ".ada");
+        document.body.appendChild(downloadAnchorNode); // required for firefox
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    }
 
-    // return JSON.stringify(jsonOut["json"], null, 4)
+    // return adaJSONBase
 }
 
 function addWeave(weaveIn) {

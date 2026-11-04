@@ -6,7 +6,7 @@ import { extractData, parseInputToStandard } from "./iodtProcessing.js";
 import MainCanvas from "./MainCanvas.js";
 import { convertSVGtoImg, reduceColors, downloadImage, setWarpEnds, createLayerSlice, createMoC } from "./imgExports.js";
 import JSZip from 'jszip';
-import { genAdaCADWorkspace } from "./AdaCADExport.js";
+import { exportAdaCAD } from "./AdaCADExport.js";
 
 // import { reduceColors } from "./svgtojpg.js";
 export { svgMC, dGraphMC, colorMapMC, writeSVGPath, patternPieces, instantiateCanvases, zip }
@@ -56,7 +56,7 @@ document.getElementById("iodt-upload-button").addEventListener("click", iodtUplo
 document.getElementById("jpg-reduce-colors-button").addEventListener("click", reduceColorsProxy)
 document.getElementById("moc-button").addEventListener("click", createMoC)
 document.getElementById("iodt-download-button").addEventListener("click", downloadIODT)
-document.getElementById("adacad-download-button").addEventListener("click", genAdaCADWorkspace)
+document.getElementById("adacad-download-button").addEventListener("click", exportAdaCAD)
 document.getElementById("zip-files-button").addEventListener("click", downloadZip)
 
 document.getElementById("cut-plane-button").addEventListener("click", addCutPlane)
@@ -259,9 +259,12 @@ async function reduceColorsProxy(download = 1) {
 
 async function downloadZip() {
     let exportName = document.getElementById("file-name-input").value;
-    let files = {}
-    files[exportName + "_iodt.json"] = downloadIODT(0)
+    // let files = {}
+    // files[exportName + "_iodt.json"] = downloadIODT(0)
     zip.file(exportName + "_iodt.json", downloadIODT(0));
+
+    // files[exportName + ".ada"] = genAdaCADWorkspace(0)
+    // zip.file(exportName + ".ada", exportAdaCAD(0));
 
     await createMoC(0);
     const blobMoC = await new Promise((resolve, reject) => {
@@ -282,6 +285,7 @@ async function downloadZip() {
         );
     });
     zip.file(exportName + "_MOB.png", blobMoB);
+
 
     const blob = await zip.generateAsync({
         type: "blob",
