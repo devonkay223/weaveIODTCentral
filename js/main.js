@@ -6,7 +6,7 @@ import { extractData, parseInputToStandard } from "./iodtProcessing.js";
 import MainCanvas from "./MainCanvas.js";
 import { convertSVGtoImg, reduceColors, downloadImage, setWarpEnds, createLayerSlice, createMoC } from "./imgExports.js";
 import JSZip from 'jszip';
-import { exportAdaCAD } from "./AdaCADExport.js";
+import { exportAdaCAD } from "./adaCADExport.js";
 
 // import { reduceColors } from "./svgtojpg.js";
 export { svgMC, dGraphMC, colorMapMC, writeSVGPath, patternPieces, instantiateCanvases, zip }
