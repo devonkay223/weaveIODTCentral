@@ -39,7 +39,7 @@
         - `shapeId` (required, unique string) form piece ID of adjoining pattern piece
         - `lineId` (required, unique string) form piece line ID for adjoining pattern piece sewn edge
   - `Mappings`
-    - `WeaveStructure` (optional, string) 
+    - `WeaveStructure` (optional, string populated from WeaveStructure entries) name of weave structure for this pattern piece (for .ada export: twill, tabby, satin)
 
 ## ArtworkArea
 - `Name` (required, unique string)
@@ -50,19 +50,19 @@
   - `LayerSystem` (required, string) string notation of warp (numeric)/weft (alpha) layer systems, use parenthesis to denote new layer grouping
    - `Mappings`
       - `FormPieces` (optional, list) form pieces (name) that get compressed into this artwork area
-      - `WeaveStructureCompiled` (optional, string) name of compiled weave structure used in this area
+      - `WeaveStructureCompiled` (optional, string populated from WeaveStructureCompiled entries) name of compiled weave structure used in this area. (for .ada export hack: specify twill, tabby, satin to apply structure to all layers of area)
     
 
 ## Weave Structure
 - `Name` (required, unique string)
-  - `DataArray` (required, array 1/0) array of single pattern repeat (1= warp lift, 0=no lift)
+  - `DataArray` (optional, array 1/0) array of single pattern repeat (1= warp lift, 0=no lift)
   - `ColorArray` (optional, array hex colors) array of weft colors for each pick in the corresponding repeat
    - `Mappings`
       - `Fiber` (optional, array of Fiber ref) array containing fiber id and ends distribution (start, end)
 
 ## Weave Structure Compiled
 - `Name` (required, unique string)
-  - `DataArray` (required, array 1/0) array of single pattern repeat (1= warp lift, 0=no lift)
+  - `DataArray` (optional, array 1/0) array of single pattern repeat (1= warp lift, 0=no lift)
   - `ColorArray` (optional, array hex colors) array of weft colors for each pick in the corresponding repeat
   - `WarpSequence` (optional, string)
     - `Mappings`
